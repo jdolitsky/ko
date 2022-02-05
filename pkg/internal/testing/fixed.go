@@ -52,6 +52,14 @@ func (f *fixedBuild) IsSupportedReference(s string) error {
 	return nil
 }
 
+// IsSupportedConfigReference implements build.Interface
+func (f *fixedBuild) IsSupportedConfigReference(s string) error {
+	if !strings.HasPrefix(s, build.StrictConfigScheme) {
+		return errors.New("value does not start with koconfig://")
+	}
+	return nil
+}
+
 // Build implements build.Interface
 func (f *fixedBuild) Build(_ context.Context, s string) (build.Result, error) {
 	s = strings.TrimPrefix(s, build.StrictScheme)

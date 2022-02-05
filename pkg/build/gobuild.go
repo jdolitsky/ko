@@ -220,6 +220,17 @@ func (g *gobuild) IsSupportedReference(s string) error {
 	return nil
 }
 
+// IsSupportedConfigReference implements build.Interface
+//
+// Value must start with koconfig://.
+func (g *gobuild) IsSupportedConfigReference(s string) error {
+	ref := newConfigRef(s)
+	if !ref.IsStrict() {
+		return errors.New("value does not start with koconfig://")
+	}
+	return nil
+}
+
 func getGoarm(platform v1.Platform) (string, error) {
 	if !strings.HasPrefix(platform.Variant, "v") {
 		return "", fmt.Errorf("strange arm variant: %v", platform.Variant)

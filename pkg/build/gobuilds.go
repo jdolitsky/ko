@@ -86,6 +86,11 @@ func (g *gobuilds) IsSupportedReference(importpath string) error {
 	return g.builder(importpath).builder.IsSupportedReference(importpath)
 }
 
+// IsSupportedConfigReference implements build.Interface
+func (g *gobuilds) IsSupportedConfigReference(importpath string) error {
+	return g.builder(importpath).builder.IsSupportedConfigReference(importpath)
+}
+
 // Build implements build.Interface
 func (g *gobuilds) Build(ctx context.Context, importpath string) (Result, error) {
 	return g.builder(importpath).builder.Build(ctx, importpath)

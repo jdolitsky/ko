@@ -38,6 +38,11 @@ type Interface interface {
 	// TODO(mattmoor): Verify that some base repo: foo.io/bar can be suffixed with this reference and parsed.
 	IsSupportedReference(string) error
 
+	// IsSupportedConfigReference determines whether the given value is a
+	// valid config reference thst Ko supports resolving, returning sn error
+	// if it is not.
+	IsSupportedConfigReference(string) error
+
 	// Build turns the given importpath reference into a v1.Image containing the Go binary
 	// (or a set of images as a v1.ImageIndex).
 	Build(context.Context, string) (Result, error)

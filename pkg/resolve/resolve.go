@@ -34,6 +34,7 @@ import (
 func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Interface, publisher publish.Interface) error {
 	// First, walk the input objects and collect a list of supported references
 	refs := make(map[string][]*yaml.Node)
+	configRefs := make(map[string][]*yaml.Node)
 
 	for _, doc := range docs {
 		it := refsFromDoc(doc)
@@ -42,7 +43,18 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 			ref := strings.TrimSpace(node.Value)
 
 			if err := builder.IsSupportedReference(ref); err != nil {
+
+				// TODO(jdolitsky): further validation of config ref to produce other errors.
+				// Currently, if this error is returned, it is silently ignored.
+				// At this point, it means that either a) the ko:// ref was invalid
+				// or b) the ref is simply not prefixed with koconfig://
+				if configErr := builder.IsSupportedConfigReference(ref); configErr == nil {
+					configRefs[ref] = append(configRefs[ref], node)
+					continue
+				}
+
 				return fmt.Errorf("found strict reference but %s is not a valid import path: %w", ref, err)
+
 			}
 
 			refs[ref] = append(refs[ref], node)
@@ -84,6 +96,24 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 		}
 	}
 
+	// Finally, inject any config references with the proper value
+	for configRef, nodes := range configRefs {
+		trimmed := strings.TrimPrefix(configRef, build.StrictConfigScheme)
+		for _, node := range nodes {
+			parts := strings.Split(trimmed, "/")
+			key := parts[0]
+			var value string
+			// TODO(jdolitsky): look up key somewhere
+			if key == "abc" {
+				value = "xyz"
+			} else {
+				// Default value (if provided), or else just empty string
+				value = strings.Join(parts[1:], "/")
+			}
+			node.Value = value
+		}
+	}
+
 	return nil
 }
 
@@ -92,5 +122,7 @@ func refsFromDoc(doc *yaml.Node) yit.Iterator {
 		RecurseNodes().
 		Filter(yit.StringValue)
 
-	return it.Filter(yit.WithPrefix(build.StrictScheme))
+	return it.Filter(yit.Union(
+		yit.WithPrefix(build.StrictScheme),
+		yit.WithPrefix(build.StrictConfigScheme)))
 }

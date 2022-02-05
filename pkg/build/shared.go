@@ -76,6 +76,11 @@ func (c *Caching) IsSupportedReference(ip string) error {
 	return c.inner.IsSupportedReference(ip)
 }
 
+// IsSupportedConfigReference implements Interface
+func (c *Caching) IsSupportedConfigReference(ip string) error {
+	return c.inner.IsSupportedConfigReference(ip)
+}
+
 // Invalidate removes an import path's cached results.
 func (c *Caching) Invalidate(ip string) {
 	c.m.Lock()
