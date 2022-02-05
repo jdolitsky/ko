@@ -78,10 +78,10 @@ func TestISRPassThrough(t *testing.T) {
 				Builder: inner,
 			}
 			rec.IsSupportedReference(test.input)
-			rec.IsSupportedConfigReference(test.input)
 			if !calledIsr {
 				t.Error("IsSupportedReference wasn't called, wanted called")
 			}
+			rec.IsSupportedConfigReference(test.input)
 			if !calledIscr {
 				t.Error("IsSupportedConfigReference wasn't called, wanted called")
 			}

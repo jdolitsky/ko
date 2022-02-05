@@ -54,7 +54,6 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 				}
 
 				return fmt.Errorf("found strict reference but %s is not a valid import path: %w", ref, err)
-
 			}
 
 			refs[ref] = append(refs[ref], node)
@@ -117,6 +116,7 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 	return nil
 }
 
+// This currently returns anything prefixed with ko:// or koconfig://
 func refsFromDoc(doc *yaml.Node) yit.Iterator {
 	it := yit.FromNode(doc).
 		RecurseNodes().
