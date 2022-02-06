@@ -34,7 +34,7 @@ import (
 func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Interface, publisher publish.Interface) error {
 	// First, walk the input objects and collect a list of supported references
 	refs := make(map[string][]*yaml.Node)
-	configRefs := make(map[string][]*yaml.Node)
+	overrideRefs := make(map[string][]*yaml.Node)
 
 	for _, doc := range docs {
 		it := refsFromDoc(doc)
@@ -44,12 +44,12 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 
 			if err := builder.IsSupportedReference(ref); err != nil {
 
-				// TODO(jdolitsky): further validation of config ref to produce other errors.
+				// TODO(jdolitsky): further validation of override ref.
 				// Currently, if this error is returned, it is silently ignored.
 				// At this point, it means that either a) the ko:// ref was invalid
 				// or b) the ref is simply not prefixed with koverride://
-				if configErr := builder.IsSupportedOverrideReference(ref); configErr == nil {
-					configRefs[ref] = append(configRefs[ref], node)
+				if overrideErr := builder.IsSupportedOverrideReference(ref); overrideErr == nil {
+					overrideRefs[ref] = append(overrideRefs[ref], node)
 					continue
 				}
 
@@ -95,13 +95,13 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 		}
 	}
 
-	// Finally, inject any config references with the proper value
+	// Finally, inject any override references with the proper value
 	var overrides map[interface{}]interface{}
 	if v := ctx.Value(build.StrictOverrideScheme); v != nil {
 		overrides = v.(map[interface{}]interface{})
 	}
-	for configRef, nodes := range configRefs {
-		value := lookupOverrideValue(configRef, overrides)
+	for overrideRef, nodes := range overrideRefs {
+		value := lookupOverrideValue(overrideRef, overrides)
 		for _, node := range nodes {
 			node.Value = value
 		}
@@ -111,6 +111,7 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 }
 
 // This currently returns anything prefixed with ko:// or koverride://
+// so that we do not try to recurse a given YAML node more than once
 func refsFromDoc(doc *yaml.Node) yit.Iterator {
 	it := yit.FromNode(doc).
 		RecurseNodes().
@@ -121,17 +122,17 @@ func refsFromDoc(doc *yaml.Node) yit.Iterator {
 		yit.WithPrefix(build.StrictOverrideScheme)))
 }
 
-// Attempt to locate a config value (from a key in the form "x.y.z")
+// Attempt to lookup an override value (from a key in the form "x.y.z")
 // from a nested override map. If the key is not found, the default
 // value is returned. If no default is provided, return empty string.
 //
 // A default value is defined by everything after the first forward
-// slash character ("/") in the config reference.
+// slash character ("/") in the override reference.
 //
 // Example: koverride://my.nested.key/my-default (default: "my-default")
-func lookupOverrideValue(configRef string, overrides map[interface{}]interface{}) string {
-	configRef = strings.TrimPrefix(configRef, build.StrictOverrideScheme)
-	parts := strings.Split(configRef, "/")
+func lookupOverrideValue(overrideRef string, overrides map[interface{}]interface{}) string {
+	overrideRef = strings.TrimPrefix(overrideRef, build.StrictOverrideScheme)
+	parts := strings.Split(overrideRef, "/")
 	key := parts[0]
 	value := strings.Join(parts[1:], "/")
 	keyParts := strings.Split(key, ".")
