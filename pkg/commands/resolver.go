@@ -291,7 +291,7 @@ func resolveFilesToWriter(
 		if err != nil {
 			return fmt.Errorf("opening koverrides file: %w", err)
 		}
-		var overrides map[interface{}]interface{}
+		var overrides map[string]interface{}
 		if err := yaml.Unmarshal(b, &overrides); err != nil {
 			return fmt.Errorf("parsing koverrides file: %w", err)
 		}

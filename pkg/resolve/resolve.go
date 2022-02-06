@@ -96,9 +96,9 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 	}
 
 	// Finally, inject any override references with the proper value
-	var overrides map[interface{}]interface{}
+	var overrides map[string]interface{}
 	if v := ctx.Value(build.StrictOverrideScheme); v != nil {
-		overrides = v.(map[interface{}]interface{})
+		overrides = v.(map[string]interface{})
 	}
 	for overrideRef, nodes := range overrideRefs {
 		value := lookupOverrideValue(overrideRef, overrides)
@@ -130,7 +130,7 @@ func refsFromDoc(doc *yaml.Node) yit.Iterator {
 // slash character ("/") in the override reference.
 //
 // Example: koverride://my.nested.key/my-default (default: "my-default")
-func lookupOverrideValue(overrideRef string, overrides map[interface{}]interface{}) string {
+func lookupOverrideValue(overrideRef string, overrides map[string]interface{}) string {
 	overrideRef = strings.TrimPrefix(overrideRef, build.StrictOverrideScheme)
 	parts := strings.Split(overrideRef, "/")
 	key := parts[0]
@@ -155,7 +155,7 @@ func lookupOverrideValue(overrideRef string, overrides map[interface{}]interface
 		if invalidChild {
 			break
 		}
-		child = v.(map[interface{}]interface{})
+		child = v.(map[string]interface{})
 	}
 	return value
 }
