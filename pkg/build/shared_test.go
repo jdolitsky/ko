@@ -54,7 +54,7 @@ func TestCaching(t *testing.T) {
 	}
 
 	if err := cb.IsSupportedOverrideReference(ip); err != nil {
-		t.Errorf("ISCR(%q) = (%v), wanted nil", err, ip)
+		t.Errorf("ISOR(%q) = (%v), wanted nil", err, ip)
 	}
 
 	previousDigest := "not-a-digest"

@@ -25,7 +25,7 @@ import (
 
 type fake struct {
 	isr  func(string) error
-	iscr func(string) error
+	isor func(string) error
 	b    func(string) (Result, error)
 }
 
@@ -38,7 +38,7 @@ func (r *fake) QualifyImport(ip string) (string, error) { return ip, nil }
 func (r *fake) IsSupportedReference(ip string) error { return r.isr(ip) }
 
 // IsSupportedOverrideReference implements Interface
-func (r *fake) IsSupportedOverrideReference(ip string) error { return r.iscr(ip) }
+func (r *fake) IsSupportedOverrideReference(ip string) error { return r.isor(ip) }
 
 // Build implements Interface
 func (r *fake) Build(_ context.Context, ip string) (Result, error) { return r.b(ip) }
@@ -57,7 +57,7 @@ func TestISRPassThrough(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			calledIsr := false
-			calledIscr := false
+			calledIsor := false
 			inner := &fake{
 				isr: func(ip string) error {
 					calledIsr = true
@@ -66,10 +66,10 @@ func TestISRPassThrough(t *testing.T) {
 					}
 					return nil
 				},
-				iscr: func(ip string) error {
-					calledIscr = true
+				isor: func(ip string) error {
+					calledIsor = true
 					if ip != test.input {
-						t.Errorf("ISCR = %v, wanted %v", ip, test.input)
+						t.Errorf("ISOR = %v, wanted %v", ip, test.input)
 					}
 					return nil
 				},
@@ -82,7 +82,7 @@ func TestISRPassThrough(t *testing.T) {
 				t.Error("IsSupportedReference wasn't called, wanted called")
 			}
 			rec.IsSupportedOverrideReference(test.input)
-			if !calledIscr {
+			if !calledIsor {
 				t.Error("IsSupportedOverrideReference wasn't called, wanted called")
 			}
 		})
