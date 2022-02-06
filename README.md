@@ -444,7 +444,8 @@ data:
 ```
 
 The default value can be defined as everything after the first forward slash (`/`)
-character. If there is no default, then an empty string will be used (`""`). Nested keys are supported using dot (`.`) notation.
+character. If there is no default, then an empty string will be used (`""`).
+Nested keys are supported using dot (`.`) notation.
 
 Consider the following koverrides file, `demo.yaml`:
 
@@ -455,8 +456,8 @@ db:
   pass: secretpass
 ```
 
-Now we run `ko resolve` (or `ko apply`) using the `--koverrides` flag,
-pointing to the file:
+Now we run `ko resolve` (or `ko apply` / `ko delete`) using the
+`--koverrides` flag, pointing to the file:
 
 ```
 ko resolve -f config/ --koverrides demo.yaml
