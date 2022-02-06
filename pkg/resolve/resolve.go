@@ -146,6 +146,14 @@ func lookupConfigValue(configRef string, overrides map[interface{}]interface{}) 
 			value = fmt.Sprintf("%v", v)
 			break
 		}
+		var invalidChild bool
+		switch v.(type) {
+		case string:
+			invalidChild = true
+		}
+		if invalidChild {
+			break
+		}
 		child = v.(map[interface{}]interface{})
 	}
 	return value
