@@ -39,7 +39,7 @@ type Interface interface {
 	IsSupportedReference(string) error
 
 	// IsSupportedOverrideReference determines whether the given value is a
-	// valid config reference that Ko supports resolving, returning an error
+	// valid override reference that Ko supports resolving, returning an error
 	// if it is not.
 	IsSupportedOverrideReference(string) error
 
