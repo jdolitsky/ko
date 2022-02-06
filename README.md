@@ -476,6 +476,9 @@ data:
   db-pass: secretpass
 ```
 
+For practical purposes, all resulting values are coerced to strings
+(e.g. `3306 -> "3306"`).
+
 This feature is particularly useful for Kubernetes resource types designed
 for configuration purposes, such as ConfigMaps or Secrets.
 
