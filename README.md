@@ -421,6 +421,64 @@ ko delete -f config/
 This is purely a convenient alias for `kubectl delete`, and doesn't perform any
 builds, or delete any previously built images.
 
+## koverrides
+
+When using `ko` in the context of Kubernetes, you may wish to reuse your YAML file(s)
+across several different environments.
+
+As a lightweight solution for environment-specific configuration, you can leverage
+"koverrides" (a.k.a. `ko` overrides).
+
+Using koverrides, you can prefix values with `koverride://` and supply a default value:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: demo
+data:
+  db-host: koverride://db.host/mysql.default.svc
+  db-port: koverride://db.port/3306
+  db-user: koverride://db.user
+  db-pass: koverride://db.pass
+```
+
+The default value can be defined as everything after the first forward slash (`/`)
+character. If there is no default, then an empty string will be used (`""`).
+
+Consider the following koverrides file, `demo.yaml`:
+
+```yaml
+database:
+  host: db.example.com
+  user: secretuser
+  pass: secretpass
+```
+
+Now we run `ko resolve` (or `ko apply`) using the `--koverrides` flag,
+pointing to the file:
+
+```
+ko resolve -f config/ --koverrides demo.yaml
+```
+
+Which produces the following YAML:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: demo
+data:
+  db-host: db.example.com
+  db-port: "3306"
+  db-user: secretuser
+  db-pass: secretpass
+```
+
+This feature is particularly useful for Kubernetes resource types designed
+for configuration purposes, such as ConfigMaps or Secrets.
+
 # Frequently Asked Questions
 
 ## How can I set `ldflags`?
