@@ -456,7 +456,7 @@ db:
   pass: secretpass
 ```
 
-Now we run `ko resolve` (or `ko apply` / `ko delete`) using the
+Now we run `ko resolve` (or `ko apply`) using the
 `--koverrides` flag, pointing to the file:
 
 ```
