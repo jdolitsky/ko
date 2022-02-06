@@ -421,7 +421,7 @@ ko delete -f config/
 This is purely a convenient alias for `kubectl delete`, and doesn't perform any
 builds, or delete any previously built images.
 
-## koverrides
+## "koverrides"
 
 When using `ko` in the context of Kubernetes, you may wish to reuse your YAML file(s)
 across several different environments.
@@ -444,12 +444,12 @@ data:
 ```
 
 The default value can be defined as everything after the first forward slash (`/`)
-character. If there is no default, then an empty string will be used (`""`).
+character. If there is no default, then an empty string will be used (`""`). Nested keys are supported using dot (`.`) notation.
 
 Consider the following koverrides file, `demo.yaml`:
 
 ```yaml
-database:
+db:
   host: db.example.com
   user: secretuser
   pass: secretpass
