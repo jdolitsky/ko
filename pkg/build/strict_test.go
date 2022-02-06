@@ -50,7 +50,7 @@ func TestStrictReference(t *testing.T) {
 	}
 }
 
-func TestStrictConfigReference(t *testing.T) {
+func TestStrictOverrideReference(t *testing.T) {
 	tests := []struct {
 		name   string
 		input  string
@@ -63,14 +63,14 @@ func TestStrictConfigReference(t *testing.T) {
 		path:   "bloop",
 	}, {
 		name:   "strict",
-		input:  "koconfig://blip",
+		input:  "koverride://blip",
 		strict: true,
 		path:   "blip",
 	}}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			ref := newConfigRef(test.input)
+			ref := newOverrideRef(test.input)
 			if got, want := ref.IsStrict(), test.strict; got != want {
 				t.Errorf("got: %v, want: %v", got, want)
 			}

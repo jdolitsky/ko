@@ -52,10 +52,10 @@ func (f *fixedBuild) IsSupportedReference(s string) error {
 	return nil
 }
 
-// IsSupportedConfigReference implements build.Interface
-func (f *fixedBuild) IsSupportedConfigReference(s string) error {
-	if !strings.HasPrefix(s, build.StrictConfigScheme) {
-		return errors.New("value does not start with koconfig://")
+// IsSupportedOverrideReference implements build.Interface
+func (f *fixedBuild) IsSupportedOverrideReference(s string) error {
+	if !strings.HasPrefix(s, build.StrictOverrideScheme) {
+		return errors.New("value does not start with koverride://")
 	}
 	return nil
 }

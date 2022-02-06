@@ -76,9 +76,9 @@ func (c *Caching) IsSupportedReference(ip string) error {
 	return c.inner.IsSupportedReference(ip)
 }
 
-// IsSupportedConfigReference implements Interface
-func (c *Caching) IsSupportedConfigReference(ip string) error {
-	return c.inner.IsSupportedConfigReference(ip)
+// IsSupportedOverrideReference implements Interface
+func (c *Caching) IsSupportedOverrideReference(ip string) error {
+	return c.inner.IsSupportedOverrideReference(ip)
 }
 
 // Invalidate removes an import path's cached results.

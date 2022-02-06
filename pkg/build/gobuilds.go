@@ -86,9 +86,9 @@ func (g *gobuilds) IsSupportedReference(importpath string) error {
 	return g.builder(importpath).builder.IsSupportedReference(importpath)
 }
 
-// IsSupportedConfigReference implements build.Interface
-func (g *gobuilds) IsSupportedConfigReference(importpath string) error {
-	return g.builder(importpath).builder.IsSupportedConfigReference(importpath)
+// IsSupportedOverrideReference implements build.Interface
+func (g *gobuilds) IsSupportedOverrideReference(importpath string) error {
+	return g.builder(importpath).builder.IsSupportedOverrideReference(importpath)
 }
 
 // Build implements build.Interface

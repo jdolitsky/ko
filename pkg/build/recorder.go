@@ -41,9 +41,9 @@ func (r *Recorder) IsSupportedReference(ip string) error {
 	return r.Builder.IsSupportedReference(ip)
 }
 
-// IsSupportedConfigReference implements build.Interface
-func (r *Recorder) IsSupportedConfigReference(ip string) error {
-	return r.Builder.IsSupportedConfigReference(ip)
+// IsSupportedOverrideReference implements build.Interface
+func (r *Recorder) IsSupportedOverrideReference(ip string) error {
+	return r.Builder.IsSupportedOverrideReference(ip)
 }
 
 // Build implements Interface

@@ -220,13 +220,13 @@ func (g *gobuild) IsSupportedReference(s string) error {
 	return nil
 }
 
-// IsSupportedConfigReference implements build.Interface
+// IsSupportedOverrideReference implements build.Interface
 //
-// Value must start with koconfig://.
-func (g *gobuild) IsSupportedConfigReference(s string) error {
-	ref := newConfigRef(s)
+// Value must start with koverride://.
+func (g *gobuild) IsSupportedOverrideReference(s string) error {
+	ref := newOverrideRef(s)
 	if !ref.IsStrict() {
-		return errors.New("value does not start with koconfig://")
+		return errors.New("value does not start with koverride://")
 	}
 	return nil
 }

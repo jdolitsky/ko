@@ -35,7 +35,7 @@ func (sb *slowbuild) QualifyImport(ip string) (string, error) { return ip, nil }
 
 func (sb *slowbuild) IsSupportedReference(string) error { return nil }
 
-func (sb *slowbuild) IsSupportedConfigReference(string) error { return nil }
+func (sb *slowbuild) IsSupportedOverrideReference(string) error { return nil }
 
 func (sb *slowbuild) Build(context.Context, string) (Result, error) {
 	time.Sleep(sb.sleep)
@@ -53,7 +53,7 @@ func TestCaching(t *testing.T) {
 		t.Errorf("ISR(%q) = (%v), wanted nil", err, ip)
 	}
 
-	if err := cb.IsSupportedConfigReference(ip); err != nil {
+	if err := cb.IsSupportedOverrideReference(ip); err != nil {
 		t.Errorf("ISCR(%q) = (%v), wanted nil", err, ip)
 	}
 

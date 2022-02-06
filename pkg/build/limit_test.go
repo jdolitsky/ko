@@ -38,8 +38,8 @@ func (r *sleeper) IsSupportedReference(ip string) error {
 	return nil
 }
 
-// IsSupportedConfigReference implements Interface
-func (r *sleeper) IsSupportedConfigReference(ip string) error {
+// IsSupportedOverrideReference implements Interface
+func (r *sleeper) IsSupportedOverrideReference(ip string) error {
 	return nil
 }
 

@@ -47,33 +47,33 @@ func (r reference) String() string {
 	return r.Path()
 }
 
-// StrictConfigScheme is a prefix that can be placed on YAML values
+// StrictOverrideScheme is a prefix that can be placed on YAML values
 // that will be converted to static values.
-const StrictConfigScheme = "koconfig://"
+const StrictOverrideScheme = "koverride://"
 
-type configReference struct {
+type overrideReference struct {
 	strict bool
 	path   string
 }
 
-func newConfigRef(s string) configReference {
-	return configReference{
-		strict: strings.HasPrefix(s, StrictConfigScheme),
-		path:   strings.TrimPrefix(s, StrictConfigScheme),
+func newOverrideRef(s string) overrideReference {
+	return overrideReference{
+		strict: strings.HasPrefix(s, StrictOverrideScheme),
+		path:   strings.TrimPrefix(s, StrictOverrideScheme),
 	}
 }
 
-func (r configReference) IsStrict() bool {
+func (r overrideReference) IsStrict() bool {
 	return r.strict
 }
 
-func (r configReference) Path() string {
+func (r overrideReference) Path() string {
 	return r.path
 }
 
-func (r configReference) String() string {
+func (r overrideReference) String() string {
 	if r.IsStrict() {
-		return StrictConfigScheme + r.Path()
+		return StrictOverrideScheme + r.Path()
 	}
 	return r.Path()
 }

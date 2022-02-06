@@ -47,8 +47,8 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 				// TODO(jdolitsky): further validation of config ref to produce other errors.
 				// Currently, if this error is returned, it is silently ignored.
 				// At this point, it means that either a) the ko:// ref was invalid
-				// or b) the ref is simply not prefixed with koconfig://
-				if configErr := builder.IsSupportedConfigReference(ref); configErr == nil {
+				// or b) the ref is simply not prefixed with koverride://
+				if configErr := builder.IsSupportedOverrideReference(ref); configErr == nil {
 					configRefs[ref] = append(configRefs[ref], node)
 					continue
 				}
@@ -97,11 +97,11 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 
 	// Finally, inject any config references with the proper value
 	var overrides map[interface{}]interface{}
-	if v := ctx.Value(build.StrictConfigScheme); v != nil {
+	if v := ctx.Value(build.StrictOverrideScheme); v != nil {
 		overrides = v.(map[interface{}]interface{})
 	}
 	for configRef, nodes := range configRefs {
-		value := lookupConfigValue(configRef, overrides)
+		value := lookupOverrideValue(configRef, overrides)
 		for _, node := range nodes {
 			node.Value = value
 		}
@@ -110,7 +110,7 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 	return nil
 }
 
-// This currently returns anything prefixed with ko:// or koconfig://
+// This currently returns anything prefixed with ko:// or koverride://
 func refsFromDoc(doc *yaml.Node) yit.Iterator {
 	it := yit.FromNode(doc).
 		RecurseNodes().
@@ -118,7 +118,7 @@ func refsFromDoc(doc *yaml.Node) yit.Iterator {
 
 	return it.Filter(yit.Union(
 		yit.WithPrefix(build.StrictScheme),
-		yit.WithPrefix(build.StrictConfigScheme)))
+		yit.WithPrefix(build.StrictOverrideScheme)))
 }
 
 // Attempt to locate a config value (from a key in the form "x.y.z")
@@ -128,9 +128,9 @@ func refsFromDoc(doc *yaml.Node) yit.Iterator {
 // A default value is defined by everything after the first forward
 // slash character ("/") in the config reference.
 //
-// Example: koconfig://my.nested.key/my-default (default: "my-default")
-func lookupConfigValue(configRef string, overrides map[interface{}]interface{}) string {
-	configRef = strings.TrimPrefix(configRef, build.StrictConfigScheme)
+// Example: koverride://my.nested.key/my-default (default: "my-default")
+func lookupOverrideValue(configRef string, overrides map[interface{}]interface{}) string {
+	configRef = strings.TrimPrefix(configRef, build.StrictOverrideScheme)
 	parts := strings.Split(configRef, "/")
 	key := parts[0]
 	value := strings.Join(parts[1:], "/")

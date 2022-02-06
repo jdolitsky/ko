@@ -60,8 +60,8 @@ func addResolve(topLevel *cobra.Command) {
 			ctx := cmd.Context()
 
 			// TODO(jdolitsky): source this from user-provided
-			// koconfig file
-			ctx = context.WithValue(ctx, build.StrictConfigScheme, map[interface{}]interface{}{
+			// koverride file
+			ctx = context.WithValue(ctx, build.StrictOverrideScheme, map[interface{}]interface{}{
 				"database": map[interface{}]interface{}{
 					"host":     "db.example.com",
 					"port":     1234,

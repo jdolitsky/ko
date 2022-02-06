@@ -37,8 +37,8 @@ func (r *fake) QualifyImport(ip string) (string, error) { return ip, nil }
 // IsSupportedReference implements Interface
 func (r *fake) IsSupportedReference(ip string) error { return r.isr(ip) }
 
-// IsSupportedConfigReference implements Interface
-func (r *fake) IsSupportedConfigReference(ip string) error { return r.iscr(ip) }
+// IsSupportedOverrideReference implements Interface
+func (r *fake) IsSupportedOverrideReference(ip string) error { return r.iscr(ip) }
 
 // Build implements Interface
 func (r *fake) Build(_ context.Context, ip string) (Result, error) { return r.b(ip) }
@@ -81,9 +81,9 @@ func TestISRPassThrough(t *testing.T) {
 			if !calledIsr {
 				t.Error("IsSupportedReference wasn't called, wanted called")
 			}
-			rec.IsSupportedConfigReference(test.input)
+			rec.IsSupportedOverrideReference(test.input)
 			if !calledIscr {
-				t.Error("IsSupportedConfigReference wasn't called, wanted called")
+				t.Error("IsSupportedOverrideReference wasn't called, wanted called")
 			}
 		})
 	}
