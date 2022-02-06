@@ -96,19 +96,13 @@ func ImageReferences(ctx context.Context, docs []*yaml.Node, builder build.Inter
 	}
 
 	// Finally, inject any config references with the proper value
+	var overrides map[interface{}]interface{}
+	if v := ctx.Value(build.StrictConfigScheme); v != nil {
+		overrides = v.(map[interface{}]interface{})
+	}
 	for configRef, nodes := range configRefs {
-		trimmed := strings.TrimPrefix(configRef, build.StrictConfigScheme)
+		value := lookupConfigValue(configRef, overrides)
 		for _, node := range nodes {
-			parts := strings.Split(trimmed, "/")
-			key := parts[0]
-			var value string
-			// TODO(jdolitsky): look up key somewhere
-			if key == "abc" {
-				value = "xyz"
-			} else {
-				// Default value (if provided), or else just empty string
-				value = strings.Join(parts[1:], "/")
-			}
 			node.Value = value
 		}
 	}
@@ -125,4 +119,34 @@ func refsFromDoc(doc *yaml.Node) yit.Iterator {
 	return it.Filter(yit.Union(
 		yit.WithPrefix(build.StrictScheme),
 		yit.WithPrefix(build.StrictConfigScheme)))
+}
+
+// Attempt to locate a config value (from a key in the form "x.y.z")
+// from a nested override map. If the key is not found, the default
+// value is returned. If no default is provided, return empty string.
+//
+// A default value is defined by everything after the first forward
+// slash character ("/") in the config reference.
+//
+// Example: koconfig://my.nested.key/my-default (default: "my-default")
+func lookupConfigValue(configRef string, overrides map[interface{}]interface{}) string {
+	configRef = strings.TrimPrefix(configRef, build.StrictConfigScheme)
+	parts := strings.Split(configRef, "/")
+	key := parts[0]
+	value := strings.Join(parts[1:], "/")
+	keyParts := strings.Split(key, ".")
+	lastIndex := len(keyParts) - 1
+	child := overrides
+	for i, keyPart := range keyParts {
+		v, ok := child[keyPart]
+		if !ok {
+			break
+		}
+		if i == lastIndex {
+			value = fmt.Sprintf("%v", v)
+			break
+		}
+		child = v.(map[interface{}]interface{})
+	}
+	return value
 }

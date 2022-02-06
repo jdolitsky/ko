@@ -15,9 +15,11 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"os"
 
+	"github.com/google/ko/pkg/build"
 	"github.com/google/ko/pkg/commands/options"
 	"github.com/spf13/cobra"
 )
@@ -56,6 +58,17 @@ func addResolve(topLevel *cobra.Command) {
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
+
+			// TODO(jdolitsky): source this from user-provided
+			// koconfig file
+			ctx = context.WithValue(ctx, build.StrictConfigScheme, map[interface{}]interface{}{
+				"database": map[interface{}]interface{}{
+					"host":     "db.example.com",
+					"port":     1234,
+					"username": "secretuser",
+					"password": "secretpass",
+				},
+			})
 
 			bo.InsecureRegistry = po.InsecureRegistry
 			builder, err := makeBuilder(ctx, bo)
